@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "npx vite build",
-    "preview": "vite preview"
+    "build": "vite build",
+    "preview": "vite preview",
+    "debug": "ls -la node_modules/.bin && ls -la node_modules/vite && vite build"
   },
   "dependencies": {
     "axios": "^1.8.4",
