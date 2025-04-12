@@ -8,7 +8,7 @@ const mockProducts = [
     brand: 'Makita',
     description: 'สว่านไร้สายสำหรับงานบ้านและงานช่างเบาๆ',
     price: 1590,
-    image: 'https://source.unsplash.com/400x300/?cordless-drill,tool'
+    image: 'https://siamwassadu.com/wp-content/uploads/2021/04/DSTELTHSCD121S2K-B1-A.jpg'
   },
   {
     id: 2,
@@ -30,8 +30,8 @@ function ProductDetail() {
   }
 
   return (
-    <div className="p-10 max-w-4xl mx-auto">
-      <img src={product.image} alt={product.name} className="w-full h-96 object-cover rounded-xl shadow mb-6" />
+    <div className="p-10 h-70 max-w-4xl mx-auto">
+      <img src={product.image} alt={product.name} className="w-full h-60 object-cover rounded-xl shadow mb-6" />
       <h1 className="text-3xl font-bold text-primary">{product.name}</h1>
       <p className="text-gray-600 mt-1">แบรนด์: {product.brand}</p>
       <p className="mt-4 text-lg">{product.description}</p>

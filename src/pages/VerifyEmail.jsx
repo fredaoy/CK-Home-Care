@@ -1,49 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 function VerifyEmail() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const email = searchParams.get('email');
-  const [status, setStatus] = useState('loading');
 
   useEffect(() => {
     if (email) {
-      // บันทึกสถานะยืนยันอีเมลไว้ใน localStorage
-      localStorage.setItem(`email_verified_${email}`, 'true');
-      setStatus('success');
-    } else {
-      setStatus('error');
+      localStorage.setItem(
+        'email_verified_status',
+        JSON.stringify({ email, verified: true })
+      );
+      setTimeout(() => {
+        navigate('/checkout');
+      }, 2500);
     }
-  }, [email]);
+  }, [email, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white shadow-md p-8 rounded-lg max-w-md w-full text-center">
-        {status === 'loading' && <p>กำลังตรวจสอบ...</p>}
-
-        {status === 'success' && (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+      <div className="bg-white shadow-lg rounded-lg p-8 text-center max-w-md">
+        {email ? (
           <>
-            <h2 className="text-2xl font-bold text-green-600 mb-4">✅ ยืนยันอีเมลเรียบร้อยแล้ว!</h2>
-            <p className="text-gray-700 mb-6">คุณสามารถกลับไปสั่งซื้อสินค้าต่อได้เลย</p>
-            <Link
-              to="/checkout"
-              className="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded"
-            >
-              กลับไปหน้าชำระเงิน
-            </Link>
+            <h2 className="text-2xl font-bold text-green-600 mb-4">
+              ✅ ยืนยันอีเมลเรียบร้อยแล้ว
+            </h2>
+            <p className="text-gray-700">
+              กำลังพากลับไปที่หน้ากรอกข้อมูลการจัดส่ง...
+            </p>
           </>
-        )}
-
-        {status === 'error' && (
+        ) : (
           <>
-            <h2 className="text-2xl font-bold text-red-600 mb-4">❌ ลิงก์ไม่ถูกต้อง</h2>
-            <p className="text-gray-700 mb-6">ไม่พบอีเมลในลิงก์ กรุณากลับไปหน้า Checkout เพื่อขอลิงก์ใหม่</p>
-            <Link
-              to="/checkout"
-              className="bg-gray-500 hover:bg-gray-700 text-white px-6 py-2 rounded"
-            >
-              กลับไป
-            </Link>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              ❌ ไม่สามารถยืนยันได้
+            </h2>
+            <p className="text-gray-600">ลิงก์ไม่ถูกต้องหรือข้อมูลหาย</p>
           </>
         )}
       </div>

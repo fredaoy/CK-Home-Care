@@ -18,7 +18,7 @@ function ProductCard({ product, onAddToCart }) {
       onClick={handleClick}
       className="cursor-pointer bg-white rounded-xl shadow-md overflow-hidden hover:scale-105 transition transform duration-300 flex flex-col justify-between"
     >
-      <img src={product.image} alt={product.name} className="w-full h-40 object-cover" />
+      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
       <div className="p-4 flex flex-col gap-2">
         <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
         <p className="text-sm text-gray-500">แบรนด์: {product.brand}</p>

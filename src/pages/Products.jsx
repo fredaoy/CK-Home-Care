@@ -9,7 +9,7 @@ const mockProducts = [
     brand: 'Makita',
     description: 'สว่านไร้สายสำหรับงานบ้านและงานช่างเบาๆ',
     price: 1590,
-    image: 'https://source.unsplash.com/400x300/?cordless-drill,tool'
+    image: 'https://siamwassadu.com/wp-content/uploads/2021/04/DSTELTHSCD121S2K-B1-A.jpg'
   },
   {
     id: 2,
@@ -17,15 +17,15 @@ const mockProducts = [
     brand: 'Bosch',
     description: 'ไขควงหลากขนาดพร้อมหัวแม่เหล็ก',
     price: 299,
-    image: 'https://source.unsplash.com/400x300/?screwdriver-set,tool'
+    image: 'https://down-th.img.susercontent.com/file/th-11134207-7qul1-lf23qpwc2nzh34'
   },
   {
     id: 3,
     name: 'เครื่องเจียร์ไฟฟ้า 4 นิ้ว',
     brand: 'DeWalt',
     description: 'เครื่องเจียร์คุณภาพ แข็งแรง ใช้งานได้นาน',
-    price: 1890,
-    image: 'https://source.unsplash.com/400x300/?grinder,tool'
+    price:  1,
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1I9sWCW2sz9qBi0yV_2uEp-T6Q2I4b5j6Tg&s'
   },
   {
     id: 4,
@@ -33,7 +33,7 @@ const mockProducts = [
     brand: 'Stanley',
     description: 'ประแจเลื่อนมาตรฐานสำหรับงานทั่วไป',
     price: 249,
-    image: 'https://source.unsplash.com/400x300/?wrench,tool'
+    image: 'https://www.exogro.co.th/wp-content/uploads/2024/04/I121-HADW131108_0.jpg'
   },
   {
     id: 5,
@@ -41,14 +41,21 @@ const mockProducts = [
     brand: 'Total Tools',
     description: 'ค้อนช่างไม้จับถนัดมือ เหมาะสำหรับงานทั่วไป',
     price: 199,
-    image: 'https://source.unsplash.com/400x300/?hammer,tool'
+    image: 'https://www.hardwarehouse.co.th/assets/images/1001641.jpg'
   }
 ];
 
+
 function Products() {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    return JSON.parse(localStorage.getItem('ck_cart')) || [];
+  });
   const [showCart, setShowCart] = useState(false);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    localStorage.setItem('ck_cart', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const handleAddToCart = (product) => {
     setCartItems(prev => {
@@ -91,6 +98,7 @@ function Products() {
     navigate('/checkout', { state: { cartItems, totalPrice } });
   };
 
+
   return (
     <div className="bg-gray-50 min-h-screen relative">
       <header className="bg-gradient-to-r from-primary to-blue-500 text-white py-10 px-6">
@@ -100,7 +108,7 @@ function Products() {
             <nav className="text-sm text-blue-100 mt-1">
               <Link to="/" className="hover:underline">หน้าแรก</Link> &gt; สินค้าทั้งหมด
             </nav>
-          </div>
+          </div> 
           <button
             onClick={() => setShowCart(!showCart)}
             className="text-sm text-white bg-accent hover:bg-orange-600 px-4 py-2 rounded-lg shadow"
