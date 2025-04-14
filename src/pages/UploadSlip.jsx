@@ -35,10 +35,9 @@ function UploadSlip() {
         try {
             setLoading(true);
 
-            const response = await axios.post(
-                'http://localhost:3001/api/check-slip',
-                formData,
-                { headers: { 'Content-Type': 'multipart/form-data' } }
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/check-slip`, 
+            formData, 
+            { headers: { 'Content-Type': 'multipart/form-data' } }
             );
 
             const result = response.data;
