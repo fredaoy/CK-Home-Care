@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 function PromptPayQR() {
   const [amount, setAmount] = useState(0);
-  const promptpayID = '0954948835'; // ใส่เบอร์พร้อมเพย์ของร้าน
+  const promptpayID = '0954948835'; // เบอร์พร้อมเพย์ของร้าน
   const navigate = useNavigate();
 
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem('ck_cart')) || [];
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    setAmount(total);
+    const order = JSON.parse(localStorage.getItem('pending_order'));
+    if (order) {
+      setAmount(parseFloat(order.totalPrice || 0));
+    }
   }, []);
 
   const handleGoToUpload = () => {

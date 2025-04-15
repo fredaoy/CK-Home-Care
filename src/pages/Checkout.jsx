@@ -1,3 +1,4 @@
+// ✅ Checkout.jsx - รับสินค้าและสั่งซื้อ พร้อมบันทึกไป localStorage (pending_order)
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import emailjs from 'emailjs-com';
@@ -26,8 +27,6 @@ function Checkout() {
       setEmailVerified(false);
     }
   }, [email]);
-
-
 
   const sendVerificationEmail = () => {
     if (!email) return alert('กรุณากรอกอีเมลก่อน');
@@ -94,18 +93,11 @@ function Checkout() {
                   type="button"
                   onClick={sendVerificationEmail}
                   disabled={emailVerified}
-                  className={`px-3 py-2 rounded text-sm ${emailVerified
-                      ? 'bg-gray-400 text-white cursor-not-allowed'
-                      : 'bg-blue-500 hover:bg-blue-600 text-white'
-                    }`}
-                >
-                  📩 ยืนยันอีเมล
-                </button>
-
+                  className={`px-3 py-2 rounded text-sm ${emailVerified ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                >📩 ยืนยันอีเมล</button>
               </div>
               {emailVerified && <p className="text-green-600 text-sm mt-1">✅ อีเมลได้รับการยืนยันแล้ว</p>}
             </div>
-
             <div>
               <label>เบอร์โทร</label>
               <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required className="w-full border p-2 rounded" />
@@ -114,7 +106,6 @@ function Checkout() {
               <label>ที่อยู่</label>
               <textarea value={address} onChange={(e) => setAddress(e.target.value)} required rows="3" className="w-full border p-2 rounded"></textarea>
             </div>
-
             {emailVerified && (
               <button type="submit" className="w-full bg-green-600 text-white py-2 rounded">✅ ไปหน้าชำระเงิน</button>
             )}

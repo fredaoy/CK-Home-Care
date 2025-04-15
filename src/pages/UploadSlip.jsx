@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../firebase';
 
-function UploadSlip() {
+export default function UploadSlip() {
   const [file, setFile] = useState(null);
   const [slipBase64, setSlipBase64] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ function UploadSlip() {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setSlipBase64(reader.result);
+      setSlipBase64(reader.result); // base64 แบบเต็ม
     };
     if (selectedFile) {
       reader.readAsDataURL(selectedFile);
@@ -42,37 +44,26 @@ function UploadSlip() {
 
     try {
       setLoading(true);
-
       const orderId = `order_${Date.now()}`;
 
-      // ✅ ส่งข้อมูลเข้า Google Sheet
-      await fetch("https://script.google.com/macros/s/AKfycbx8J6pxVigjZufdAADzW9VSg-NQ35_UaEnrqSOKSvUbEFcpUMDtGUQHHSa0gm-PR650DQ/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          address,
-          email,
-          cartItems,
-          totalPrice: amount.toFixed(2),
-          orderId,
-          date: new Date().toISOString(), // เพิ่ม timestamp (ถ้ารองรับ)
-        }),
-        mode: "no-cors"
+      await addDoc(collection(db, "orders"), {
+        orderId,
+        name,
+        email,
+        phone,
+        address,
+        cartItems,
+        totalPrice: amount.toFixed(2),
+        slipBase64,
+        createdAt: new Date().toISOString()
       });
 
-      // ✅ เก็บสลิปไว้ใน localStorage
-      localStorage.setItem(`slip_${orderId}`, slipBase64);
+      localStorage.removeItem("pending_order");
+      localStorage.removeItem("ck_cart");
 
-      // ✅ ล้างข้อมูล
-      localStorage.removeItem('pending_order');
-      localStorage.removeItem('ck_cart');
-
-      window.location.href = '/thank-you';
-
+      window.location.href = "/thank-you";
     } catch (err) {
-      console.error("❌ ส่งข้อมูลล้มเหลว:", err);
+      console.error("❌ เกิดข้อผิดพลาด:", err);
       alert("ไม่สามารถส่งข้อมูลได้");
     } finally {
       setLoading(false);
@@ -82,28 +73,14 @@ function UploadSlip() {
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-lg mx-auto bg-white p-6 rounded shadow">
-        <h2 className="text-xl font-bold mb-4">📤 อัปโหลดสลิป (จำลอง)</h2>
+        <h2 className="text-xl font-bold mb-4">📤 อัปโหลดสลิป (Base64 → Firestore)</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block font-medium">ชื่อผู้โอน</label>
-            <input type="text" value={name} disabled className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-500" />
-          </div>
-          <div>
-            <label className="block font-medium">ยอดที่โอน (บาท)</label>
-            <input
-              type="number"
-              value={amount.toFixed(2)}
-              disabled
-              className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-500"
-            />
-          </div>
-          <div>
-            <label className="block font-medium">แนบรูปสลิป</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} className="w-full" required />
-            {slipBase64 && (
-              <img src={slipBase64} alt="preview" className="w-32 h-auto mt-2 rounded border" />
-            )}
-          </div>
+          <input type="text" value={name} disabled className="w-full border px-3 py-2 rounded bg-gray-100" />
+          <input type="number" value={amount.toFixed(2)} disabled className="w-full border px-3 py-2 rounded bg-gray-100" />
+          
+          <input type="file" accept="image/*" onChange={handleFileChange} className="w-full" required />
+          {slipBase64 && <img src={slipBase64} alt="slip preview" className="w-32 mt-2 border rounded" />}
+          
           <button
             type="submit"
             disabled={loading}
@@ -116,9 +93,6 @@ function UploadSlip() {
     </div>
   );
 }
-
-export default UploadSlip;
-
 
 
 

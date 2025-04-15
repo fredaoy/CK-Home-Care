@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../../firebase'; // ✅ ปรับ path ให้ตรงกับไฟล์ config
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('ck_products')) || [];
-    setProducts(stored);
+    const fetchProducts = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'products'));
+        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setProducts(list);
+      } catch (err) {
+        console.error("❌ โหลดสินค้าไม่สำเร็จ:", err);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const handleLogout = () => {
@@ -15,22 +26,27 @@ export default function Dashboard() {
     navigate('/admin/login');
   };
 
-  const handleDelete = (id) => {
-    const updated = products.filter(p => p.id !== id);
-    localStorage.setItem('ck_products', JSON.stringify(updated));
-    setProducts(updated);
+  const handleDelete = async (id) => {
+    const confirm = window.confirm("ต้องการลบสินค้านี้ใช่หรือไม่?");
+    if (!confirm) return;
+
+    try {
+      await deleteDoc(doc(db, 'products', id));
+      setProducts(products.filter(p => p.id !== id));
+    } catch (err) {
+      console.error("❌ ลบสินค้าไม่สำเร็จ:", err);
+      alert("เกิดข้อผิดพลาดขณะลบสินค้า");
+    }
   };
 
   const handleEdit = (id) => {
     navigate(`/admin/edit-item/${id}`);
   };
-  
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-
         <button
           onClick={handleLogout}
           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
@@ -92,7 +108,11 @@ export default function Dashboard() {
               </tr>
             ))}
             {products.length === 0 && (
-              <tr><td colSpan="5" className="p-4 text-center text-gray-500">ไม่มีสินค้าที่จะแสดง</td></tr>
+              <tr>
+                <td colSpan="5" className="p-4 text-center text-gray-500">
+                  ไม่มีสินค้าที่จะแสดง
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

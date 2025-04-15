@@ -1,3 +1,4 @@
+// ✅ Payments.jsx - ดึงจาก pending_order ไม่ต้องพึ่ง ck_cart
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -7,10 +8,11 @@ function Payments() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem('ck_cart')) || [];
-    setCartItems(storedCart);
-    const totalAmount = storedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    setTotal(totalAmount);
+    const pending = JSON.parse(localStorage.getItem('pending_order'));
+    if (pending) {
+      setCartItems(pending.cartItems || []);
+      setTotal(parseFloat(pending.totalPrice || 0));
+    }
   }, []);
 
   const handlePayment = () => {
