@@ -47,9 +47,9 @@ function UploadSlip() {
       const orderId = `order_${Date.now()}`;
   
       // ✅ ส่งไปยัง SlipOK API
-      const slipRes = await fetch('https://api.slipok.io/v1/verify-slip', {
+      const slipRes = await fetch('https://api.slipok.com/api/line/apikey/43369', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer YOUR_API_KEY' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'SLIPOKM2G0OC0' },
         body: JSON.stringify({ image: slipBase64 })
       });
   
