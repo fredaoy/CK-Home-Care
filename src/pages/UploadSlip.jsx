@@ -41,29 +41,31 @@ function UploadSlip() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file || !name || !amount) return alert('กรุณากรอกข้อมูลให้ครบ');
-  
+
     try {
       setLoading(true);
       const orderId = `order_${Date.now()}`;
 
-      const cleanBase64 = slipBase64.replace(/^data:image\/\w+;base64,/, '');
-  
       // ✅ ส่งไปยัง SlipOK API
+      const formData = new FormData();
+      formData.append('files', file);
+
       const slipRes = await fetch('https://api.slipok.com/api/line/apikey/43369', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-                    'Authorization': 'Bearer SLIPOKM2G0OC0' },
-                    body: JSON.stringify({ image: cleanBase64 })
+        headers: {
+          'Authorization': 'Bearer SLIPOKM2G0OC0'
+        },
+        body: formData
       });
-  
+
       const result = await slipRes.json();
       console.log("🔍 ตรวจสอบสลิป:", result);
-  
+
       if (!result.success || result.amount !== parseFloat(amount)) {
         alert('❌ ไม่พบข้อมูลสลิป หรือยอดไม่ตรง กรุณาแนบใหม่');
         return;
       }
-  
+
       // ✅ ถ้าผ่าน → ส่งเข้า Firestore
       await addDoc(collection(db, "orders"), {
         orderId,
@@ -77,11 +79,11 @@ function UploadSlip() {
         verifiedBy: "SlipOK",
         createdAt: new Date().toISOString()
       });
-  
+
       localStorage.removeItem("pending_order");
       localStorage.removeItem("ck_cart");
       window.location.href = "/thank-you";
-  
+
     } catch (err) {
       console.error("❌ ตรวจสอบ/ส่งข้อมูลล้มเหลว:", err);
       alert("ไม่สามารถส่งข้อมูลได้");
@@ -89,7 +91,6 @@ function UploadSlip() {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
