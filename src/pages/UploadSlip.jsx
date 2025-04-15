@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../firebase';
 
-export default function UploadSlip() {
+function UploadSlip() {
   const [file, setFile] = useState(null);
   const [slipBase64, setSlipBase64] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function UploadSlip() {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setSlipBase64(reader.result); // base64 แบบเต็ม
+      setSlipBase64(reader.result);
     };
     if (selectedFile) {
       reader.readAsDataURL(selectedFile);
@@ -73,14 +73,28 @@ export default function UploadSlip() {
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="max-w-lg mx-auto bg-white p-6 rounded shadow">
-        <h2 className="text-xl font-bold mb-4">📤 อัปโหลดสลิป (Base64 → Firestore)</h2>
+        <h2 className="text-xl font-bold mb-4">📤 อัปโหลดสลิปเพื่อยืนยันการโอน</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="text" value={name} disabled className="w-full border px-3 py-2 rounded bg-gray-100" />
-          <input type="number" value={amount.toFixed(2)} disabled className="w-full border px-3 py-2 rounded bg-gray-100" />
-          
-          <input type="file" accept="image/*" onChange={handleFileChange} className="w-full" required />
-          {slipBase64 && <img src={slipBase64} alt="slip preview" className="w-32 mt-2 border rounded" />}
-          
+          <div>
+            <label className="block font-medium">ชื่อผู้โอน</label>
+            <input type="text" value={name} disabled className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-500" />
+          </div>
+          <div>
+            <label className="block font-medium">ยอดที่โอน (บาท)</label>
+            <input
+              type="number"
+              value={amount.toFixed(2)}
+              disabled
+              className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-500"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">แนบรูปสลิป</label>
+            <input type="file" accept="image/*" onChange={handleFileChange} className="w-full" required />
+            {slipBase64 && (
+              <img src={slipBase64} alt="preview" className="w-32 h-auto mt-2 rounded border" />
+            )}
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -94,6 +108,7 @@ export default function UploadSlip() {
   );
 }
 
+export default UploadSlip;
 
 
 
