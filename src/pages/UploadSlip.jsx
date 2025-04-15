@@ -45,15 +45,19 @@ function UploadSlip() {
     try {
       setLoading(true);
       const orderId = `order_${Date.now()}`;
+
+      const cleanBase64 = slipBase64.replace(/^data:image\/\w+;base64,/, '');
   
       // ✅ ส่งไปยัง SlipOK API
       const slipRes = await fetch('https://api.slipok.com/api/line/apikey/43369', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'SLIPOKM2G0OC0' },
-        body: JSON.stringify({ image: slipBase64 })
+        headers: { 'Content-Type': 'application/json',
+                    'Authorization': 'Bearer SLIPOKM2G0OC0' },
+                    body: JSON.stringify({ image: cleanBase64 })
       });
   
       const result = await slipRes.json();
+      console.log("🔍 ตรวจสอบสลิป:", result);
   
       if (!result.success || result.amount !== parseFloat(amount)) {
         alert('❌ ไม่พบข้อมูลสลิป หรือยอดไม่ตรง กรุณาแนบใหม่');
