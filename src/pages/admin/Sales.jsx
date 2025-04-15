@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase'; // ✅ ปรับให้ตรงกับ path firebase
 
 export default function Sales() {
-  const [salesData, setSalesData] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [todayTotal, setTodayTotal] = useState(0);
   const [weekSummary, setWeekSummary] = useState([]);
 
   useEffect(() => {
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/1IXuieYcQi7AZqn0Phydi41NcUIIQRyi8ymLdDmC3hGQ/gviz/tq?tqx=out:json&gid=0";
+    const fetchOrders = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'orders'));
+        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setOrders(list);
+      } catch (err) {
+        console.error('❌ ดึงข้อมูล Firestore ล้มเหลว:', err);
+      }
+    };
 
-    fetch(sheetUrl)
-      .then(res => res.text())
-      .then(text => {
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        const rows = json.table.rows.map(r =>
-          r.c.map(cell => (cell && cell.v !== null ? cell.v : ''))
-        );
-        setSalesData(rows);
-      })
-      .catch(err => console.error("โหลดข้อมูลล้มเหลว:", err));
+    fetchOrders();
   }, []);
 
   useEffect(() => {
@@ -25,31 +26,11 @@ export default function Sales() {
     const summary = {};
     let todaySum = 0;
 
-    salesData.forEach(order => {
-      const rawDate = order[6]; // คอลัมน์ G = วันที่
-      const price = parseFloat(order[5]) || 0;
-
-      if (!rawDate) return;
-
-      let orderDate;
-
-      // เช็คว่าเป็น Date อยู่แล้วหรือไม่
-      if (typeof rawDate === 'string') {
-        // ใช้ split แยกวันที่กับเวลา
-        const parts = rawDate.split(/[\s,]+/); // "13/4/2025, 3:13:06"
-        if (parts.length >= 2) {
-          const [day, month, year] = parts[0].split('/').map(Number);
-          const [hour, minute, second] = parts[1].split(':').map(Number);
-          orderDate = new Date(year, month - 1, day, hour, minute, second);
-        } else {
-          orderDate = new Date(rawDate); // fallback
-        }
-      } else {
-        orderDate = new Date(rawDate);
-      }
+    orders.forEach(order => {
+      const price = parseFloat(order.totalPrice) || 0;
+      const orderDate = new Date(order.createdAt);
 
       const dateKey = orderDate.toLocaleDateString('th-TH', { dateStyle: 'short' });
-
       summary[dateKey] = (summary[dateKey] || 0) + price;
 
       const isToday = orderDate.toDateString() === now.toDateString();
@@ -73,13 +54,13 @@ export default function Sales() {
 
     setTodayTotal(todaySum);
     setWeekSummary(weekData);
-  }, [salesData]);
+  }, [orders]);
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Sales Report</h1>
       <div className="bg-white rounded-xl shadow p-4">
-        <p className="text-sm text-gray-500 mb-2">(ยอดขายจาก Google Sheet)</p>
+        <p className="text-sm text-gray-500 mb-2">(ยอดขายจาก Firestore)</p>
         <div className="text-xl font-semibold text-green-600">
           ยอดขายรวมวันนี้: ฿{todayTotal.toLocaleString()}
         </div>
@@ -96,4 +77,4 @@ export default function Sales() {
       </div>
     </div>
   );
-}
+}  
