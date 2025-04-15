@@ -1,33 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 
-const mockProducts = [
-  {
-    id: 1,
-    name: 'สว่านไฟฟ้า 650W',
-    description: 'กำลังสูง เหมาะสำหรับงานหนัก',
-    price: 1290,
-    image: 'https://source.unsplash.com/400x300/?drill,tool'
-  },
-  {
-    id: 2,
-    name: 'เครื่องตัดเหล็ก',
-    description: 'ใช้งานสะดวก แข็งแรง',
-    price: 1990,
-    image: 'https://source.unsplash.com/400x300/?metal-cutter,tool'
-  },
-  {
-    id: 3,
-    name: 'ไขควงชุด 24in1',
-    description: 'เหมาะสำหรับช่างมืออาชีพ',
-    price: 399,
-    image: 'https://source.unsplash.com/400x300/?screwdriver,tool'
-  },
-];
-
 function Home() {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('ck_products')) || [];
+
+    // ❗ เลือกสินค้ายอดนิยม 3 รายการแรก (หรือจะ random ก็ได้)
+    const topThree = stored.slice(0, 3);
+    setFeaturedProducts(topThree);
+  }, []);
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
@@ -38,11 +24,15 @@ function Home() {
 
       <main className="container mx-auto px-6 py-12">
         <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">สินค้าแนะนำ</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {mockProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {featuredProducts.length === 0 ? (
+          <p className="text-center text-gray-500">ยังไม่มีสินค้าสำหรับแสดง</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </main>
 
       <Footer />

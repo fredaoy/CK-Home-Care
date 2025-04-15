@@ -21,6 +21,7 @@ function ProductCard({ product, onAddToCart }) {
       <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
       <div className="p-4 flex flex-col gap-2">
         <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
+        <p className="text-xs text-gray-500">รหัสสินค้า: {product.code}</p>
         <p className="text-sm text-gray-500">แบรนด์: {product.brand}</p>
         <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
         <p className="text-primary font-bold text-lg">฿{product.price}</p>

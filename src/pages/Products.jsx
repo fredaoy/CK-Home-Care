@@ -2,56 +2,23 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 
-const mockProducts = [
-  {
-    id: 1,
-    name: 'สว่านไร้สาย 12V',
-    brand: 'Makita',
-    description: 'สว่านไร้สายสำหรับงานบ้านและงานช่างเบาๆ',
-    price: 1590,
-    image: 'https://siamwassadu.com/wp-content/uploads/2021/04/DSTELTHSCD121S2K-B1-A.jpg'
-  },
-  {
-    id: 2,
-    name: 'ไขควงชุด 31in1',
-    brand: 'Bosch',
-    description: 'ไขควงหลากขนาดพร้อมหัวแม่เหล็ก',
-    price: 299,
-    image: 'https://down-th.img.susercontent.com/file/th-11134207-7qul1-lf23qpwc2nzh34'
-  },
-  {
-    id: 3,
-    name: 'เครื่องเจียร์ไฟฟ้า 4 นิ้ว',
-    brand: 'DeWalt',
-    description: 'เครื่องเจียร์คุณภาพ แข็งแรง ใช้งานได้นาน',
-    price:  1,
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1I9sWCW2sz9qBi0yV_2uEp-T6Q2I4b5j6Tg&s'
-  },
-  {
-    id: 4,
-    name: 'ประแจเลื่อน 10 นิ้ว',
-    brand: 'Stanley',
-    description: 'ประแจเลื่อนมาตรฐานสำหรับงานทั่วไป',
-    price: 249,
-    image: 'https://www.exogro.co.th/wp-content/uploads/2024/04/I121-HADW131108_0.jpg'
-  },
-  {
-    id: 5,
-    name: 'ค้อนช่างไม้ 16oz',
-    brand: 'Total Tools',
-    description: 'ค้อนช่างไม้จับถนัดมือ เหมาะสำหรับงานทั่วไป',
-    price: 199,
-    image: 'https://www.hardwarehouse.co.th/assets/images/1001641.jpg'
-  }
-];
+
+
 
 
 function Products() {
+  const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState(() => {
     return JSON.parse(localStorage.getItem('ck_cart')) || [];
   });
   const [showCart, setShowCart] = useState(false);
   const navigate = useNavigate();
+
+  // โหลดสินค้าจาก localStorage เมื่อหน้า Products เปิดขึ้น
+  React.useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('ck_products')) || [];
+    setProducts(stored);
+  }, []);
 
   React.useEffect(() => {
     localStorage.setItem('ck_cart', JSON.stringify(cartItems));
@@ -108,7 +75,7 @@ function Products() {
             <nav className="text-sm text-blue-100 mt-1">
               <Link to="/" className="hover:underline">หน้าแรก</Link> &gt; สินค้าทั้งหมด
             </nav>
-          </div> 
+          </div>
           <button
             onClick={() => setShowCart(!showCart)}
             className="text-sm text-white bg-accent hover:bg-orange-600 px-4 py-2 rounded-lg shadow"
@@ -120,12 +87,11 @@ function Products() {
 
       <main className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {mockProducts.map(product => (
+          {products.map(product => (
             <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
           ))}
         </div>
       </main>
-
       {showCart && (
         <div className="absolute top-20 right-6 w-80 bg-white rounded-lg shadow-lg p-4 z-50">
           <h3 className="text-xl font-bold mb-4">🛍️ ตะกร้าของคุณ</h3>
@@ -139,6 +105,7 @@ function Products() {
                     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
                     <div className="flex-1">
                       <h4 className="font-semibold text-sm">{item.name}</h4>
+                      <p className="text-xs text-gray-500">รหัส: {item.code}</p>
                       <p className="text-xs text-gray-500">แบรนด์: {item.brand}</p>
                       <p className="text-primary font-bold">฿{item.price * item.quantity}</p>
                       <div className="flex items-center gap-2 mt-2">
