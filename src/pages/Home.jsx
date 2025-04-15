@@ -2,17 +2,31 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+
 
 function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('ck_products')) || [];
-
-    // ❗ เลือกสินค้ายอดนิยม 3 รายการแรก (หรือจะ random ก็ได้)
-    const topThree = stored.slice(0, 3);
-    setFeaturedProducts(topThree);
+    const fetchProducts = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'products'));
+        const allProducts = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        const topThree = allProducts.slice(0, 3); // หรือสุ่มก็ได้
+        setFeaturedProducts(topThree);
+      } catch (err) {
+        console.error('❌ ดึงสินค้าไม่สำเร็จ:', err);
+      }
+    };
+  
+    fetchProducts();
   }, []);
+  
 
   return (
     <div className="bg-gray-50 min-h-screen">
