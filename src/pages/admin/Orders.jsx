@@ -30,19 +30,22 @@ export default function Orders() {
               <th className="p-3">ชื่อ</th>
               <th className="p-3">เบอร์</th>
               <th className="p-3">Email</th>
+              <th className="p-3">ที่อยู่</th> {/* ✅ เพิ่มตรงนี้ */}
               <th className="p-3">รายการสินค้า</th>
               <th className="p-3">ยอดรวม</th>
               <th className="p-3">วันที่</th>
               <th className="p-3">สลิป</th>
             </tr>
           </thead>
+
           <tbody>
             {orders.map((order, index) => (
               <tr key={order.id || index} className="border-t">
-               <td className="p-3">{index + 1}</td>
+                <td className="p-3">{index + 1}</td>
                 <td className="p-3">{order.name}</td>
                 <td className="p-3">{order.phone}</td>
                 <td className="p-3">{order.email}</td>
+                <td className="p-3 whitespace-pre-wrap">{order.address}</td> {/* ✅ เพิ่มตรงนี้ */}
                 <td className="p-3">
                   <ul className="list-disc ml-4 text-gray-700">
                     {order.cartItems?.map((item, idx) => (
@@ -72,13 +75,6 @@ export default function Orders() {
                 </td>
               </tr>
             ))}
-            {orders.length === 0 && (
-              <tr>
-                <td colSpan="8" className="p-4 text-center text-gray-500">
-                  กำลังโหลดข้อมูล...
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
